@@ -6,7 +6,7 @@ import dev.nova.setting.Setting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
+import net.minecraft.client.input.MouseButtonEvent;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class ClickGuiScreen extends Screen {
 
     private static Module selected;
     private float scroll, contentH;
-    private boolean wasDown, wasKey = true;
+    private boolean down, clickPending;
     private Object dragTarget;
     private int dragSub;
 
@@ -32,6 +32,24 @@ public class ClickGuiScreen extends Screen {
     public void extractBackground(GuiGraphicsExtractor c, int mx, int my, float delta) { c.fill(0, 0, width, height, 0x88000000); }
 
     @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        down = true;
+        clickPending = true;
+        return true;
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        down = false;
+        return true;
+    }
+
+    @Override
+    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+        return true;
+    }
+
+    @Override
     public boolean mouseScrolled(double mx, double my, double h, double v) {
         float view = H - 78 - 10;
         scroll = Math.max(0, Math.min(Math.max(0, contentH - view), scroll - (float) v * 16));
@@ -41,14 +59,9 @@ public class ClickGuiScreen extends Screen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor c, int mx, int my, float delta) {
         extractBackground(c, mx, my, delta);
-        long handle = GLFW.glfwGetCurrentContext();
-        boolean down = GLFW.glfwGetMouseButton(handle, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
-        boolean click = down && !wasDown;
-        wasDown = down;
+        boolean click = clickPending;
+        clickPending = false;
         if (!down) dragTarget = null;
-        boolean key = GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_RIGHT_SHIFT) == GLFW.GLFW_PRESS;
-        if (key && !wasKey) { onClose(); return; }
-        wasKey = key;
 
         int px = (width - W) / 2, py = (height - H) / 2;
         rrect(c, px - 1, py - 1, W + 2, H + 2, 10, 0x558B6CFF);
@@ -147,7 +160,7 @@ public class ClickGuiScreen extends Screen {
         contentH = sy + scroll - viewTop;
         c.disableScissor();
 
-        c.text(font, "Rechte Shift: schließen  •  Mausrad: scrollen", px + 12, py + H - 14, 0xFF55556A, false);
+        c.text(font, "Esc: schließen  •  Mausrad: scrollen", px + 12, py + H - 14, 0xFF55556A, false);
     }
 
     // ---------- Helfer ----------

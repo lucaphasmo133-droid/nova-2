@@ -3,9 +3,14 @@
   "id": "nova",
   "version": "${version}",
   "name": "Nova Client",
-  "description": "Client mit ClickGUI, Storage Finder und Spawner Finder",
+  "description": "ClickGUI mit Storage Finder und Spawner Finder",
+  "license": "All-Rights-Reserved",
   "environment": "client",
-  "entrypoints": { "client": ["dev.nova.NovaClient"] },
+  "entrypoints": {
+    "client": [
+      "dev.nova.NovaClient"
+    ]
+  },
   "depends": {
     "fabricloader": ">=0.19.5",
     "minecraft": "~26.3",

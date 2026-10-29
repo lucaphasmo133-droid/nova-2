@@ -22,6 +22,7 @@ public abstract class EspModule extends Module {
     public final Setting.ColorPick color = add(new Setting.ColorPick("Farbe", 0.62f, 0.65f, 1f));
     public final Setting.Num outlineOpacity = add(new Setting.Num("Outline-Deckkraft", 100, 0, 100, 5, "%"));
     public final Setting.Num fillOpacity = add(new Setting.Num("Füllungs-Deckkraft", 25, 0, 100, 5, "%"));
+    public final Setting.Num lineWidth = add(new Setting.Num("Linienstärke", 3, 1, 10, 1, ""));
     public final Setting.Num expand = add(new Setting.Num("Box-Größe (+)", 0.0, 0.0, 0.3, 0.01, ""));
     public final Setting.Num range = add(new Setting.Num("Reichweite", 128, 16, 256, 8, " m"));
     public final Setting.Bool throughWalls = add(new Setting.Bool("Durch Wände", true));
@@ -32,6 +33,7 @@ public abstract class EspModule extends Module {
     protected EspModule(String name, String description) {
         super(name, description, Category.RENDER);
         color.visible = () -> colorMode.is("Statisch") || colorMode.is("Pulsierend");
+        lineWidth.visible = () -> !renderMode.is("Gefüllt");
         outlineOpacity.visible = () -> !renderMode.is("Gefüllt");
         fillOpacity.visible = () -> !renderMode.is("Outline");
     }
